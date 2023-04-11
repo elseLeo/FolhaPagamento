@@ -32,7 +32,7 @@ public cadastroColaborador() {
 
 }
     public void iniciarComponentes(){
-        setTitle("Pessoa Fisica");
+        setTitle("Folha de Pagamento");
         setSize(500,300);
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         setContentPane(pnlCadastroColaborador);
@@ -56,46 +56,60 @@ public cadastroColaborador() {
                     String setor = txtSetor.getText();
                     String cargo = txtCargo.getText();
                     String horas_trabalhadas1 = txtHorasTrab.getText();
-                    try {
-                        Double horas_trabalhadas = Double.parseDouble(horas_trabalhadas1);
-                        stmtInserir.setString(1, cpf);
-                        stmtInserir.setString(2, nome);
-                        stmtInserir.setString(3, setor);
-                        stmtInserir.setString(4, cargo);
-                        stmtInserir.setDouble(5, horas_trabalhadas);
-                        stmtInserir.executeUpdate();
-                        System.out.println("Dados Inseridos!");
-                        CalculoFolha cal = new CalculoFolha();
-                        cal.calcularINSS(horas_trabalhadas * 35);
-                        cal.calcularIRPF(horas_trabalhadas * 35);
-                        Double liquido = (horas_trabalhadas * 35)-(cal.aliqINSS + cal.aliqIRPF);
-                        String folhaPagamento = "CPF: "+txtCPF.getText()+"\n"
-                                +"Nome: "+txtNome.getText()+"\n"
-                                +"Setor: "+txtSetor.getText()+"\n"
-                                +"Cargo: "+txtCargo.getText()+"\n"
-                                +"Horas Trabalhadas: "+txtHorasTrab.getText()+"\n"
-                                +"Salário Base: "+horas_trabalhadas * 35+"\n"
-                                +"INSS: "+cal.aliqINSS+"\n"
-                                +"IRPF: "+cal.aliqIRPF+"\n"
-                                +"Salário Liquido: "+liquido;
-                        JOptionPane.showMessageDialog(btnSalvar,folhaPagamento);
-                        txtCPF.setText("");
-                        txtNome.setText("");
-                        txtSetor.setText("");
-                        txtCargo.setText("");
-                        txtHorasTrab.setText("");
-                    }catch (Exception ex){
-                        System.out.println("Erro ao conectar no banco de dados");
+                    if (txtCPF.getText().isEmpty()){
+                        JOptionPane.showMessageDialog(null,"Insira o CPF corretamente!");
+                    }
+                    else if (txtNome.getText().isEmpty()){
+                        JOptionPane.showMessageDialog(null,"Insira o Nome corretamente!");
+                    }
+                    else if (txtSetor.getText().isEmpty()){
+                        JOptionPane.showMessageDialog(null,"Insira o Setor corretamente!");
+                    }
+                    else if (txtCargo.getText().isEmpty()){
+                        JOptionPane.showMessageDialog(null,"Insira o Cargo corretamente!");
+                    }else {
+                        try {
+                            Double horas_trabalhadas = Double.parseDouble(horas_trabalhadas1);
+                            stmtInserir.setString(1, cpf);
+                            stmtInserir.setString(2, nome);
+                            stmtInserir.setString(3, setor);
+                            stmtInserir.setString(4, cargo);
+                            stmtInserir.setDouble(5, horas_trabalhadas);
+                            stmtInserir.executeUpdate();
+                            System.out.println("Dados Inseridos!");
+                            CalculoFolha cal = new CalculoFolha();
+                            cal.calcularINSS(horas_trabalhadas * 35);
+                            cal.calcularIRPF(horas_trabalhadas * 35);
+                            Double liquido = (horas_trabalhadas * 35) - (cal.aliqINSS + cal.aliqIRPF);
+                            String folhaPagamento = "CPF: " + txtCPF.getText() + "\n"
+                                    + "Nome: " + txtNome.getText() + "\n"
+                                    + "Setor: " + txtSetor.getText() + "\n"
+                                    + "Cargo: " + txtCargo.getText() + "\n"
+                                    + "Horas Trabalhadas: " + txtHorasTrab.getText() + "\n"
+                                    + "Salário Base: " + horas_trabalhadas * 35 + "\n"
+                                    + "INSS: " + cal.aliqINSS + "\n"
+                                    + "IRPF: " + cal.aliqIRPF + "\n"
+                                    + "Salário Liquido: " + liquido;
+                            JOptionPane.showMessageDialog(btnSalvar, folhaPagamento);
+                            txtCPF.setText("");
+                            txtNome.setText("");
+                            txtSetor.setText("");
+                            txtCargo.setText("");
+                            txtHorasTrab.setText("");
+                        } catch (NumberFormatException ex) {
+                            JOptionPane.showMessageDialog(null, "Dado das horas trabalhadas incorretos!");
+                        } catch (SQLException ex) {
+                            System.out.println("Este CPF já possui cadastro!");
+                        }
                     }
                 }
             });
         }catch (Exception ex) {
-            System.out.println("Erro ao conectar o banco de dados!");
+            System.out.println("Erro ao conectar o banco de dados !");
         }
     }
 
     public static void main(String[] args) {
         cadastroColaborador cad = new cadastroColaborador();
-
     }
 }
